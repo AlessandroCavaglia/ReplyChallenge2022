@@ -1,10 +1,7 @@
 package org.example;
 
 
-import org.example.model.Demon;
-import org.example.model.Event;
-import org.example.model.FirstStrategyWorker;
-import org.example.model.Game;
+import org.example.model.*;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -109,8 +106,6 @@ public class App
                     bestBets.add(workers.get(i).getResult());
                 }
             }catch (Exception ex){
-
-
             }
         }
 
@@ -120,6 +115,11 @@ public class App
             if(demonValutation>bestDemonValutation){
                 bestDemonValutation=demonValutation;
                 chosenDemon=actual;
+            }else if(demonValutation == bestDemonValutation){
+                if(isBestFirstDemon(actual,chosenDemon,game)){
+                    bestDemonValutation=demonValutation;
+                    chosenDemon=actual;
+                }
             }
         }
         //Scegli il migliore
@@ -130,6 +130,79 @@ public class App
             return demons.indexOf(chosenDemon);
         else
             return -1;
+    }
+
+    public static int secondStrategy(Game game,List<Demon>demons,List<Event> events){
+        List<SecondStrategyWorker> workers=new ArrayList<>();
+        List<Demon> bestBets=new ArrayList<>();
+        Demon chosenDemon=null;
+        float bestDemonValutation=-1;
+
+        int scale=demons.size()/THREADS;
+        for(int i=0;i<THREADS;i++){
+            int firstIndex=i*scale;
+            int endIndex=((i+1)*scale)-1;
+            if(i==THREADS-1){
+                endIndex=demons.size()-1;
+            }
+            SecondStrategyWorker worker=new SecondStrategyWorker(firstIndex,endIndex,demons,game);
+            worker.start();
+            workers.add(worker);
+        }
+        for(int i=0;i<THREADS;i++){
+            try{
+                workers.get(i).join();
+                if(workers.get(i).getResult()!=null){
+                    bestBets.add(workers.get(i).getResult());
+                }
+            }catch (Exception ex){
+            }
+        }
+        int remainingTurns=game.getMaxTurn()-game.getActualTurn();
+        for (Demon actual:
+                bestBets) {
+            float demonValutation;
+            if(actual.getFrammenti().size()>=remainingTurns){
+                demonValutation=actual.getSommaFrammenti();
+            }else{
+                demonValutation=actual.getMediaFrammenti()*remainingTurns;
+            }
+            if(demonValutation>bestDemonValutation){
+                bestDemonValutation=demonValutation;
+                chosenDemon=actual;
+            }else if( demonValutation==bestDemonValutation){
+                if(isBestFirstDemon(actual,chosenDemon,game)){
+                    bestDemonValutation=demonValutation;
+                    chosenDemon=actual;
+                }
+            }
+        }
+        //Scegli il migliore
+
+        System.out.println("Ho scelto:"+chosenDemon);
+
+        if(chosenDemon!=null)
+            return demons.indexOf(chosenDemon);
+        else
+            return -1;
+    }
+
+    static boolean  isBestFirstDemon(Demon demon1, Demon demon2, Game game){
+        int remainingTurns=game.getMaxTurn()-game.getActualTurn();
+        float demonVal1,demonVal2;
+        if(demon1.getFrammenti().size()>=remainingTurns){
+            demonVal1=demon1.getSommaFrammenti();
+        }else{
+            demonVal1=demon1.getMediaFrammenti()*remainingTurns;
+        }
+
+        if(demon2.getFrammenti().size()>=remainingTurns){
+            demonVal2=demon2.getSommaFrammenti();
+        }else{
+            demonVal2=demon2.getMediaFrammenti()*remainingTurns;
+        }
+
+        return demonVal1>demonVal2;
     }
 
 }
