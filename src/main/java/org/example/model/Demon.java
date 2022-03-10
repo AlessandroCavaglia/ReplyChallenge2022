@@ -1,14 +1,28 @@
 package org.example.model;
 
+import java.util.List;
+
 public class Demon {
     int staminRichiesta;
     int tempoRecupero;
     int staminaRecupero;
-    int[] frammenti;
+    List<Integer> frammenti;
     int sommaFrammenti;
     float mediaFrammenti;
 
-    public Demon(int staminRichiesta, int tempoRecupero, int staminaRecupero, int[] frammenti) {
+    @Override
+    public String toString() {
+        return "Demon{" +
+                "staminRichiesta=" + staminRichiesta +
+                ", tempoRecupero=" + tempoRecupero +
+                ", staminaRecupero=" + staminaRecupero +
+                ", frammenti=" + frammenti +
+                ", sommaFrammenti=" + sommaFrammenti +
+                ", mediaFrammenti=" + mediaFrammenti +
+                '}';
+    }
+
+    public Demon(int staminRichiesta, int tempoRecupero, int staminaRecupero, List<Integer> frammenti) {
         this.staminRichiesta = staminRichiesta;
         this.tempoRecupero = tempoRecupero;
         this.staminaRecupero = staminaRecupero;
@@ -18,7 +32,7 @@ public class Demon {
              frammenti) {
             this.sommaFrammenti+=elem;
         }
-        this.mediaFrammenti = Float.parseFloat(""+sommaFrammenti) / frammenti.length;
+        this.mediaFrammenti = Float.parseFloat(""+sommaFrammenti) / frammenti.size();
     }
 
     public int getStaminRichiesta() {
@@ -45,11 +59,11 @@ public class Demon {
         this.staminaRecupero = staminaRecupero;
     }
 
-    public int[] getFrammenti() {
+    public List<Integer> getFrammenti() {
         return frammenti;
     }
 
-    public void setFrammenti(int[] frammenti) {
+    public void setFrammenti(List<Integer> frammenti) {
         this.frammenti = frammenti;
     }
 

@@ -1,6 +1,16 @@
 package org.example.model;
 
 public class Game {
+    @Override
+    public String toString() {
+        return "Game{" +
+                "maxTurn=" + maxTurn +
+                ", actualTurn=" + actualTurn +
+                ", stamina=" + stamina +
+                ", maxStamina=" + maxStamina +
+                '}';
+    }
+
     int maxTurn;
     int actualTurn;
     int stamina;
