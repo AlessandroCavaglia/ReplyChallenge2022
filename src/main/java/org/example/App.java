@@ -75,14 +75,48 @@ public class App
 
     public static int chooseEnemy(Game game,List<Demon>demons,List<Event> events){
         int choosenEnemy=-1;
-        System.out.println("Stamina attualke: "+game.getStamina());
-        if(game.getStamina() >= game.getMaxStamina()/2){
-            System.out.println("strategia 3 piu punti");
-            choosenEnemy=thirdStrategy(game,demons,events);
-        }else{
-            System.out.println("strategia 1 piu vita");
+        int turniRimaneti = game.getMaxTurn() - game.getActualTurn();
+
+        String turniRimasti ="", staminaRimasta = "";
+        if(game.getStamina() <= game.getMaxStamina()/4)
+            staminaRimasta = "P";
+
+        if(game.getStamina() > game.getMaxStamina()/4 && game.getStamina() < game.getMaxStamina()/4 * 3)
+            staminaRimasta = "M";
+
+        if(game.getStamina() >= game.getMaxStamina()/4 * 3)
+            staminaRimasta = "T";
+
+
+        if(turniRimaneti <= game.getMaxTurn()/4)
+            turniRimasti = "P";
+
+        if(turniRimaneti > game.getMaxTurn()/4 && turniRimaneti < game.getMaxTurn()/4 * 3)
+            turniRimasti = "M";
+
+        if(turniRimaneti >= game.getMaxTurn()/4 * 3)
+            turniRimasti = "T";
+
+
+
+        if(staminaRimasta.equals("P") && turniRimasti.equals("T"))
             choosenEnemy=firstStrategy(game,demons,events);
-        }
+        else if(staminaRimasta.equals("M") && turniRimasti.equals("T"))
+            choosenEnemy=thirdStrategy(game,demons,events);
+        else if(staminaRimasta.equals("T") && turniRimasti.equals("T"))
+            choosenEnemy=thirdStrategy(game,demons,events);
+        else if(staminaRimasta.equals("P") && turniRimasti.equals("M"))
+            choosenEnemy=firstStrategy(game,demons,events);
+        else if(staminaRimasta.equals("M") && turniRimasti.equals("M"))
+            choosenEnemy=thirdStrategy(game,demons,events);
+        else if(staminaRimasta.equals("T") && turniRimasti.equals("M"))
+            choosenEnemy=thirdStrategy(game,demons,events);
+        else if(staminaRimasta.equals("P") && turniRimasti.equals("P"))
+            choosenEnemy=secondStrategy(game,demons,events);
+        else if(staminaRimasta.equals("M") && turniRimasti.equals("P"))
+            choosenEnemy=thirdStrategy(game,demons,events);
+        else if(staminaRimasta.equals("T") && turniRimasti.equals("P"))
+            choosenEnemy=thirdStrategy(game,demons,events);
 
 
 
@@ -131,7 +165,7 @@ public class App
         }
         //Scegli il migliore
 
-        System.out.println("Ho scelto:"+chosenDemon);
+        //System.out.println("Ho scelto:"+chosenDemon);
 
         if(chosenDemon!=null)
             return demons.indexOf(chosenDemon);
@@ -163,24 +197,25 @@ public class App
                     bestBets.add(workers.get(i).getResult());
                 }
             }catch (Exception ex){
-
-
             }
         }
 
         for (Demon actual:
-             bestBets) {
-            float demonValutation=(actual.getStaminaRecupero()-actual.getStaminRichiesta())/ Float.parseFloat(""+actual.getTempoRecupero());
+                bestBets) {
+            float demonValutation=(actual.getStaminRichiesta())/ Float.parseFloat(""+actual.getTempoRecupero());
             if(demonValutation>bestDemonValutation){
                 bestDemonValutation=demonValutation;
                 chosenDemon=actual;
-            }else{
-
+            }else if(demonValutation == bestDemonValutation){
+                if(isBestFirstDemon(actual,chosenDemon,game)){
+                    bestDemonValutation=demonValutation;
+                    chosenDemon=actual;
+                }
             }
         }
         //Scegli il migliore
 
-        System.out.println("Ho scelto:"+chosenDemon);
+        //System.out.println("Ho scelto:"+chosenDemon);
 
         if(chosenDemon!=null)
             return demons.indexOf(chosenDemon);
@@ -188,9 +223,8 @@ public class App
             return -1;
     }
 
-
     public static int thirdStrategy(Game game,List<Demon>demons,List<Event> events){
-        List<SecondStrategyWorker> workers=new ArrayList<>();
+        List<ThirdStrategyWorker> workers=new ArrayList<>();
         List<Demon> bestBets=new ArrayList<>();
         Demon chosenDemon=null;
         float bestDemonValutation=-1;
@@ -202,7 +236,7 @@ public class App
             if(i==THREADS-1){
                 endIndex=demons.size()-1;
             }
-            SecondStrategyWorker worker=new SecondStrategyWorker(firstIndex,endIndex,demons,game);
+            ThirdStrategyWorker worker=new ThirdStrategyWorker(firstIndex,endIndex,demons,game);
             worker.start();
             workers.add(worker);
         }
@@ -236,7 +270,7 @@ public class App
         }
         //Scegli il migliore
 
-        System.out.println("Ho scelto:"+chosenDemon);
+        //System.out.println("Ho scelto:"+chosenDemon);
 
         if(chosenDemon!=null)
             return demons.indexOf(chosenDemon);
