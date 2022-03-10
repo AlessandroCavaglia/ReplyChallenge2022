@@ -20,9 +20,9 @@ public class SecondStrategyWorker extends ListWorker{
             if(actual.getStaminRichiesta()<=game.getStamina()){
                 float demonValutation;
                 if(actual.getFrammenti().size()>=remainingTurns){
-                    demonValutation=bestDemon.getSommaFrammenti();
+                    demonValutation=actual.getSommaFrammenti();
                 }else{
-                    demonValutation=bestDemon.getMediaFrammenti()*remainingTurns;
+                    demonValutation=actual.getMediaFrammenti()*remainingTurns;
                 }
                 if(demonValutation>bestDemonValutation){
                     bestDemonValutation=demonValutation;
