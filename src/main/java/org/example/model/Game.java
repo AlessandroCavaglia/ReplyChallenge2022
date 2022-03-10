@@ -45,6 +45,8 @@ public class Game {
 
     public void setStamina(int stamina) {
         this.stamina = stamina;
+        if(this.stamina>this.maxStamina)
+            this.stamina=this.maxStamina;
     }
 
     public int getMaxStamina() {

@@ -15,8 +15,8 @@ public class ReadFile {
         filePath=path;
     }
 
-    public void read(Game game, List<Demon> demoni) throws FileNotFoundException {
-        //Game game = null;
+    public Game readGame() throws FileNotFoundException {
+        Game game = null;
         String fileData="";
         //List<Demon> demoni = new ArrayList<>();
         String [] infoTurno;
@@ -29,6 +29,38 @@ public class ReadFile {
                 if(first){
                     infoTurno = myReader.nextLine().split(" ");
                     game = new Game(Integer.parseInt(infoTurno[2]),Integer.parseInt(infoTurno[0]),Integer.parseInt(infoTurno[1]));
+                    first = false;
+                    myReader.close();
+                    return game;
+                }else{
+                    List<Integer> frammenti = new ArrayList();
+                    infoDemone = myReader.nextLine().split(" ");
+                    for (int i = 4; i < Integer.parseInt(infoDemone[3]) + 4; i++) {
+                        frammenti.add(Integer.parseInt(infoDemone[i]));
+                    }
+                }
+
+            }
+            myReader.close();
+        }catch(Exception ex){
+            System.out.println("An error occurred.");
+            ex.printStackTrace();
+        }
+        return game;
+    }
+
+    public List<Demon> readDemons() throws FileNotFoundException {
+        String fileData="";
+        List<Demon> demoni = new ArrayList<>();
+        String [] infoTurno;
+        String [] infoDemone;
+        boolean first = true;
+        try{
+            File myObj = new File(filePath);
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                if(first){
+                    myReader.nextLine();
                     first = false;
                 }else{
                     List<Integer> frammenti = new ArrayList();
@@ -46,8 +78,7 @@ public class ReadFile {
             System.out.println("An error occurred.");
             ex.printStackTrace();
         }
-        game.toString();
-        demoni.forEach(System.out::println);
-
+        return demoni;
     }
+
 }
