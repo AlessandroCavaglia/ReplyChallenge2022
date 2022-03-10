@@ -13,10 +13,13 @@ import java.util.List;
  */
 public class App 
 {
+
+    static boolean farm = true;
     public static final int THREADS=8;
 
     public static void main( String[] args ) throws FileNotFoundException {
-        ReadFile rf=new ReadFile("inputs/05-androids-armageddon.txt");
+        ReadFile rf=new ReadFile("inputs/1.txt");
+        WriteFile wr = new WriteFile("file1.txt");
         List<Demon> demons = new ArrayList<>();
         Game game = null;
         game=rf.readGame();
@@ -48,7 +51,7 @@ public class App
 
 
 
-        WriteFile wr = new WriteFile("file.txt");
+
         wr.write(enemiesDefeated);
     }
 
@@ -78,46 +81,57 @@ public class App
         int turniRimaneti = game.getMaxTurn() - game.getActualTurn();
 
         String turniRimasti ="", staminaRimasta = "";
-        if(game.getStamina() <= game.getMaxStamina()/4)
+        if(game.getStamina() <= game.getMaxStamina()/3)
             staminaRimasta = "P";
 
-        if(game.getStamina() > game.getMaxStamina()/4 && game.getStamina() < game.getMaxStamina()/4 * 3)
+        if(game.getStamina() > game.getMaxStamina()/3 && game.getStamina() < game.getMaxStamina()/3 * 2)
             staminaRimasta = "M";
 
-        if(game.getStamina() >= game.getMaxStamina()/4 * 3)
+        if(game.getStamina() >= game.getMaxStamina()/3 * 2)
             staminaRimasta = "T";
 
 
-        if(turniRimaneti <= game.getMaxTurn()/4)
+        if(turniRimaneti <= game.getMaxTurn()/10)
             turniRimasti = "P";
 
-        if(turniRimaneti > game.getMaxTurn()/4 && turniRimaneti < game.getMaxTurn()/4 * 3)
+        if(turniRimaneti > game.getMaxTurn()/4 && turniRimaneti < game.getMaxTurn()/6 * 5)
             turniRimasti = "M";
 
-        if(turniRimaneti >= game.getMaxTurn()/4 * 3)
+        if(turniRimaneti >= game.getMaxTurn()/6 * 5)
             turniRimasti = "T";
 
 
 
-        if(staminaRimasta.equals("P") && turniRimasti.equals("T"))
+      /*  if(staminaRimasta.equals("P") && turniRimasti.equals("T"))
             choosenEnemy=firstStrategy(game,demons,events);
         else if(staminaRimasta.equals("M") && turniRimasti.equals("T"))
-            choosenEnemy=thirdStrategy(game,demons,events);
+            choosenEnemy=firstStrategy(game,demons,events);
         else if(staminaRimasta.equals("T") && turniRimasti.equals("T"))
             choosenEnemy=thirdStrategy(game,demons,events);
         else if(staminaRimasta.equals("P") && turniRimasti.equals("M"))
             choosenEnemy=firstStrategy(game,demons,events);
         else if(staminaRimasta.equals("M") && turniRimasti.equals("M"))
-            choosenEnemy=thirdStrategy(game,demons,events);
+            choosenEnemy=firstStrategy(game,demons,events);
         else if(staminaRimasta.equals("T") && turniRimasti.equals("M"))
             choosenEnemy=thirdStrategy(game,demons,events);
         else if(staminaRimasta.equals("P") && turniRimasti.equals("P"))
-            choosenEnemy=secondStrategy(game,demons,events);
+            choosenEnemy=thirdStrategy(game,demons,events);
         else if(staminaRimasta.equals("M") && turniRimasti.equals("P"))
             choosenEnemy=thirdStrategy(game,demons,events);
         else if(staminaRimasta.equals("T") && turniRimasti.equals("P"))
-            choosenEnemy=thirdStrategy(game,demons,events);
+            choosenEnemy=thirdStrategy(game,demons,events);*/
 
+
+        if(game.getStamina() <= game.getMaxStamina()/4*3 && farm)
+
+                choosenEnemy=firstStrategy(game,demons,events);
+
+        else{
+            farm = false;
+            choosenEnemy=thirdStrategy(game,demons,events);
+            if(game.getStamina() <= game.getMaxStamina()/4)
+                farm = true;
+        }
 
 
         return choosenEnemy;
