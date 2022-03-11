@@ -18,13 +18,13 @@ public class App
     public static final int THREADS=8;
 
     public static void main( String[] args ) throws FileNotFoundException {
-        ReadFile rf=new ReadFile("inputs/1.txt");
-        WriteFile wr = new WriteFile("file1.txt");
+        ReadFile rf=new ReadFile("inputs/5.txt");
+        WriteFile wr = new WriteFile("file5.txt");
         List<Demon> demons = new ArrayList<>();
         Game game = null;
         game=rf.readGame();
         demons=rf.readDemons();
-
+        demons=ListWorker.loadDemonsStamibaValutationAndReturn(demons);
 
         List<Integer> enemiesDefeated=new ArrayList<Integer>();
         List<Event> events=new ArrayList<Event>();
@@ -122,15 +122,10 @@ public class App
             choosenEnemy=thirdStrategy(game,demons,events);*/
 
 
-        if(game.getStamina() <= game.getMaxStamina()/4*3 && farm)
-
-                choosenEnemy=firstStrategy(game,demons,events);
-
+        if(game.getStamina() <= game.getMaxStamina()/2)
+                choosenEnemy=firstStrategyV2(game,demons,events);
         else{
-            farm = false;
-            choosenEnemy=thirdStrategy(game,demons,events);
-            if(game.getStamina() <= game.getMaxStamina()/4)
-                farm = true;
+            choosenEnemy=thirdStrategyV2(game,demons,events);
         }
 
 
@@ -167,6 +162,56 @@ public class App
         for (Demon actual:
                 bestBets) {
             float demonValutation=(actual.getStaminaRecupero()-actual.getStaminRichiesta())/ Float.parseFloat(""+actual.getTempoRecupero());
+            if(demonValutation>bestDemonValutation){
+                bestDemonValutation=demonValutation;
+                chosenDemon=actual;
+            }else if(demonValutation == bestDemonValutation){
+                if(isBestFirstDemon(actual,chosenDemon,game)){
+                    bestDemonValutation=demonValutation;
+                    chosenDemon=actual;
+                }
+            }
+        }
+        //Scegli il migliore
+
+        //System.out.println("Ho scelto:"+chosenDemon);
+
+        if(chosenDemon!=null)
+            return demons.indexOf(chosenDemon);
+        else
+            return -1;
+    }
+
+    public static int firstStrategyV2(Game game,List<Demon>demons,List<Event> events){
+        List<FirstStrategyWorkerV2> workers=new ArrayList<>();
+        List<Demon> bestBets=new ArrayList<>();
+        Demon chosenDemon=null;
+        float bestDemonValutation=-1;
+
+        int scale=demons.size()/THREADS;
+        for(int i=0;i<THREADS;i++){
+            int firstIndex=i*scale;
+            int endIndex=((i+1)*scale)-1;
+            if(i==THREADS-1){
+                endIndex=demons.size()-1;
+            }
+            FirstStrategyWorkerV2 worker=new FirstStrategyWorkerV2(firstIndex,endIndex,demons,game);
+            worker.start();
+            workers.add(worker);
+        }
+        for(int i=0;i<THREADS;i++){
+            try{
+                workers.get(i).join();
+                if(workers.get(i).getResult()!=null){
+                    bestBets.add(workers.get(i).getResult());
+                }
+            }catch (Exception ex){
+            }
+        }
+
+        for (Demon actual:
+                bestBets) {
+            float demonValutation=actual.getValutationStamina()*2+actual.getValutationPunteggio();
             if(demonValutation>bestDemonValutation){
                 bestDemonValutation=demonValutation;
                 chosenDemon=actual;
@@ -272,6 +317,56 @@ public class App
             }else{
                 demonValutation=actual.getMediaFrammenti()*remainingTurns;
             }
+            if(demonValutation>bestDemonValutation){
+                bestDemonValutation=demonValutation;
+                chosenDemon=actual;
+            }else if( demonValutation==bestDemonValutation){
+                if(isBestFirstDemon(actual,chosenDemon,game)){
+                    bestDemonValutation=demonValutation;
+                    chosenDemon=actual;
+                }
+            }
+        }
+        //Scegli il migliore
+
+        //System.out.println("Ho scelto:"+chosenDemon);
+
+        if(chosenDemon!=null)
+            return demons.indexOf(chosenDemon);
+        else
+            return -1;
+    }
+
+    public static int thirdStrategyV2(Game game,List<Demon>demons,List<Event> events){
+        List<ThirdStrategyWorkerV2> workers=new ArrayList<>();
+        List<Demon> bestBets=new ArrayList<>();
+        Demon chosenDemon=null;
+        float bestDemonValutation=-1;
+
+        int scale=demons.size()/THREADS;
+        for(int i=0;i<THREADS;i++){
+            int firstIndex=i*scale;
+            int endIndex=((i+1)*scale)-1;
+            if(i==THREADS-1){
+                endIndex=demons.size()-1;
+            }
+            ThirdStrategyWorkerV2 worker=new ThirdStrategyWorkerV2(firstIndex,endIndex,demons,game);
+            worker.start();
+            workers.add(worker);
+        }
+        for(int i=0;i<THREADS;i++){
+            try{
+                workers.get(i).join();
+                if(workers.get(i).getResult()!=null){
+                    bestBets.add(workers.get(i).getResult());
+                }
+            }catch (Exception ex){
+            }
+        }
+        int remainingTurns=game.getMaxTurn()-game.getActualTurn();
+        for (Demon actual:
+                bestBets) {
+            float demonValutation=actual.getValutationStamina()+actual.getValutationPunteggio()*2;
             if(demonValutation>bestDemonValutation){
                 bestDemonValutation=demonValutation;
                 chosenDemon=actual;

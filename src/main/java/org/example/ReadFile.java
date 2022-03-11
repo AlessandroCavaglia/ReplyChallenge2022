@@ -80,5 +80,23 @@ public class ReadFile {
         }
         return demoni;
     }
+    public List<Integer> readEnemies(){
+        String fileData="";
+        List<Integer> enemies = new ArrayList<>();
+        try{
+            File myObj = new File(filePath);
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                    fileData = myReader.nextLine();
+                    enemies.add(Integer.parseInt(fileData));
+
+                }
+            myReader.close();
+        }catch(Exception ex){
+            System.out.println("An error occurred.");
+            ex.printStackTrace();
+        }
+        return enemies;
+    }
 
 }

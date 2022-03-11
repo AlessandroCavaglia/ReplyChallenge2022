@@ -9,6 +9,8 @@ public class Demon {
     List<Integer> frammenti;
     int sommaFrammenti;
     float mediaFrammenti;
+    float valutationStamina;
+    float valutationPunteggio;
 
     @Override
     public String toString() {
@@ -81,5 +83,21 @@ public class Demon {
 
     public void setMediaFrammenti(float mediaFrammenti) {
         this.mediaFrammenti = mediaFrammenti;
+    }
+
+    public float getValutationStamina() {
+        return valutationStamina;
+    }
+
+    public void setValutationStamina(float valutationStamina) {
+        this.valutationStamina = valutationStamina;
+    }
+
+    public float getValutationPunteggio() {
+        return valutationPunteggio;
+    }
+
+    public void setValutationPunteggio(float valutationPunteggio) {
+        this.valutationPunteggio = valutationPunteggio;
     }
 }
