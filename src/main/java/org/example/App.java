@@ -183,6 +183,7 @@ public class App
     }
 
     public static int firstStrategyV2(Game game,List<Demon>demons,List<Event> events){
+        demons=ListWorker.loadDemonsScoreValutation(game.getMaxTurn()-game.getActualTurn(),demons);
         List<FirstStrategyWorkerV2> workers=new ArrayList<>();
         List<Demon> bestBets=new ArrayList<>();
         Demon chosenDemon=null;
@@ -338,6 +339,7 @@ public class App
     }
 
     public static int thirdStrategyV2(Game game,List<Demon>demons,List<Event> events){
+        demons=ListWorker.loadDemonsScoreValutation(game.getMaxTurn()-game.getActualTurn(),demons);
         List<ThirdStrategyWorkerV2> workers=new ArrayList<>();
         List<Demon> bestBets=new ArrayList<>();
         Demon chosenDemon=null;

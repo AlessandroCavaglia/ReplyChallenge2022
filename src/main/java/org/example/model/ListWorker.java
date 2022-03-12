@@ -46,21 +46,34 @@ public abstract class ListWorker extends Thread{
         this.result = result;
     }
 
-    public void loadDemonsScoreValutation(int remainingTurns){
+    public static List<Demon> loadDemonsScoreValutation(int remainingTurns,List<Demon> demons){
+        float maxValue=-1;
         for (Demon actual:
-             this.demons.subList(startIndex,endIndex+1)) {
+             demons) {
             if(actual.getFrammenti().size()>=remainingTurns){
                 actual.setValutationPunteggio(actual.getSommaFrammenti());
             }else{
                 actual.setValutationPunteggio(actual.getMediaFrammenti()*remainingTurns);
             }
-
+            if(maxValue<actual.getValutationPunteggio())
+                maxValue=actual.getValutationPunteggio();
         }
+        for (Demon actual:
+                demons) {
+            actual.setValutationPunteggio(maxValue/actual.getValutationPunteggio());
+        }
+        return demons;
     }
 
     public static List<Demon> loadDemonsStamibaValutationAndReturn(List<Demon> demons){
+        float maxValue=-1;
         for(Demon actual:demons){
             actual.setValutationStamina((actual.getStaminaRecupero()-actual.getStaminRichiesta())/ Float.parseFloat(""+actual.getTempoRecupero()));
+            if(actual.getValutationStamina()>maxValue)
+                maxValue=actual.getValutationStamina();
+        }
+        for(Demon actual:demons){
+            actual.setValutationStamina(maxValue/actual.getValutationStamina());
         }
         return demons;
     }

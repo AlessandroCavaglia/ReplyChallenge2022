@@ -13,12 +13,11 @@ public class FirstStrategyWorkerV2 extends ListWorker{
 
     public void run(){
         Demon bestDemon=null;
-        this.loadDemonsScoreValutation(game.getMaxTurn()-game.getActualTurn());
         float bestDemonValutation=-1;
         for(int i=startIndex;i<=endIndex;i++){
             Demon actual=demons.get(i);
             if(actual.getStaminRichiesta()<=game.getStamina()){
-                float demonValutation=actual.getValutationStamina()*2+actual.getValutationPunteggio();
+                float demonValutation=actual.getValutationStamina()*5+actual.getValutationPunteggio();
                 if(demonValutation>bestDemonValutation){
                     bestDemonValutation=demonValutation;
                     bestDemon=actual;
